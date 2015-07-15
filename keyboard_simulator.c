@@ -95,22 +95,6 @@ int main()
 		parse(buffer);
 	}
 
-	/* keycodes defined in /usr/include/X11/keysymdef.h */
-	unsigned int ctrl = XKeysymToKeycode(disp, XK_Alt_L);
-	unsigned int right = XKeysymToKeycode(disp, XK_Right);
-
-	printf("ctrl: %i\n", XK_Alt_L);
-	printf("%lu\n", XStringToKeysym("Alt_L"));
-
-	printf("ctrl: %u, right: %u\n", ctrl, right);
-
-	sleep(2);
-
-	press(ctrl);
-	click(right);
-	release(ctrl);
-	XFlush(disp);
-
 	XCloseDisplay(disp);
 	return 0;
 }
