@@ -4,7 +4,7 @@ LDLIBS = -lX11 -lXtst
 
 PROG = keyboard_simulator
 
-OBJS = $(PROG).o
+OBJS = $(PROG).o error.o
 
 .PHONY: all clean
 
