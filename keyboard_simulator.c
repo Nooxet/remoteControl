@@ -1,11 +1,15 @@
 #include <stdio.h>
-#include <time.h>
+#include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
 
+#include "error.h"
+
+#define NUMKEYS (10)
 
 static Display *disp;
 
@@ -38,11 +42,60 @@ void click(unsigned int key)
 	XFlush(disp);
 }
 
+bool parse(char *buffer)
+{
+	/* fill with zeros */
+	unsigned int keys[NUMKEYS] = { NoSymbol };
+	unsigned int key;
+	int idx = 0;
+
+	char *p = buffer;
+	for (int i = 0, n = strlen(buffer); i <= n; i++) {
+		/* delimiter found, insert key to keys array */
+		if (buffer[i] == '+' || buffer[i] == '\0') {
+			buffer[i] = '\0';
+			
+			/* get keycode */
+			key = XStringToKeysym(p);
+			if (key == NoSymbol) return false;
+			if (idx >= NUMKEYS) return false;
+			
+			/* add to array */
+			keys[idx++] = key;
+			
+			/* start of new string */
+			p = &buffer[i + 1];
+		}
+	}
+
+	for (int i = 0; i < 10; i++) {
+		printf("%u\n", keys[i]);
+	}
+
+	return true;
+}
+
 int main()
 {
 	disp = XOpenDisplay(NULL);
 
-	// keycodes defined in /usr/include/X11/keysymdef.h
+	if (!disp) {
+		error("Failed to open display");
+	}
+
+	printf("%lu\n", NoSymbol);
+
+	// TODO: fix vulnerability for buffer overflow
+	char buffer[128];
+
+	while (1) {
+		scanf("%s", buffer);
+		/* terminate string */
+		buffer[sizeof(buffer) - 1] = '\0';
+		parse(buffer);
+	}
+
+	/* keycodes defined in /usr/include/X11/keysymdef.h */
 	unsigned int ctrl = XKeysymToKeycode(disp, XK_Alt_L);
 	unsigned int right = XKeysymToKeycode(disp, XK_Right);
 
