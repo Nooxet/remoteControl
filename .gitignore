@@ -1,0 +1,4 @@
+keyboard_simulator
+*.o
+core
+*.swp
