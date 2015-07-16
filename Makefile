@@ -1,16 +1,7 @@
-CC = clang
-CFLAGS = -Wall -Wextra -pedantic -std=c99 -g
-LDLIBS = -lX11 -lXtst
 
-PROG = keyboard_simulator
-
-OBJS = $(PROG).o error.o
-
-.PHONY: all clean
-
-all: $(PROG)
-
-$(PROG): $(OBJS)
+all:
+	+$(MAKE) -C keyboard_simulator/
 
 clean:
-	rm -Rf *.o core $(PROG)
+	+$(MAKE) clean -C keyboard_simulator/
+	rm -Rf *.pyc __pycache__/
