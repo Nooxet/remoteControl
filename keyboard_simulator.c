@@ -9,43 +9,45 @@
 
 #include "error.h"
 
-#define NUMKEYS (10)
+#define MAXSTRING	128
+#define MAXKEYS		10
 
 static Display *disp;
 
 /**
  * press down a key
  */
-void press(unsigned int key)
+bool press(unsigned int key)
 {
 	assert(disp != NULL);
-	XTestFakeKeyEvent(disp, key, 1, 0);
+	return XTestFakeKeyEvent(disp, key, 1, 0);
 }
 
 /**
  * release a key
  */
-void release(unsigned int key)
+bool release(unsigned int key)
 {
 	assert(disp != NULL);
-	XTestFakeKeyEvent(disp, key, 0, 0);
+	return XTestFakeKeyEvent(disp, key, 0, 0);
 }
 
 /**
  * click (press and release) a key
  */
-void click(unsigned int key)
+bool click(unsigned int key)
 {
 	assert(disp != NULL);
-	press(key);
-	release(key);
+	if (!press(key)) return false;
+	if (!release(key)) return false;
 	XFlush(disp);
+	return true;
 }
 
 bool parse(char *buffer)
 {
 	/* fill with zeros */
-	unsigned int keys[NUMKEYS] = { NoSymbol };
+	unsigned int keys[MAXKEYS] = { NoSymbol };
 	unsigned int key;
 	int idx = 0;
 
@@ -58,7 +60,7 @@ bool parse(char *buffer)
 			/* get keycode */
 			key = XStringToKeysym(p);
 			if (key == NoSymbol) return false;
-			if (idx >= NUMKEYS) return false;
+			if (idx >= MAXKEYS) return false;
 			
 			/* add to array */
 			keys[idx++] = key;
@@ -68,7 +70,7 @@ bool parse(char *buffer)
 		}
 	}
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < MAXKEYS; i++) {
 		printf("%u\n", keys[i]);
 	}
 
@@ -86,7 +88,7 @@ int main()
 	printf("%lu\n", NoSymbol);
 
 	// TODO: fix vulnerability for buffer overflow
-	char buffer[128];
+	char buffer[MAXSTRING];
 
 	while (1) {
 		scanf("%s", buffer);
