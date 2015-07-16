@@ -2,3 +2,5 @@ keyboard_simulator
 *.o
 core
 *.swp
+*.pyc
+__pycache__/
