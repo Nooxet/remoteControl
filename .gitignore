@@ -1,4 +1,4 @@
-keyboard_simulator
+keyboard_simulator/keyboard_simulator
 *.o
 core
 *.swp
