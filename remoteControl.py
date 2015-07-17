@@ -13,6 +13,7 @@ Noxet
 import sys
 import time
 import syslog
+import signal
 import SocketServer
 
 from daemon import Daemon
@@ -27,6 +28,11 @@ class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
 		self.log('Remote Control server started at port %d' % self.PORT)
 
 	def run(self):
+		# handle Ctrl + C, if running in no-daemon mode
+		signal.signal(signal.SIGINT, self.signal_handler)
+		# handle termination signal, if running in daemon mode
+		signal.signal(signal.SIGTERM, self.signal_handler)
+
 		try:
 			SocketServer.ThreadingTCPServer.__init__(self, ('0.0.0.0', self.PORT), RCHandler)
 		except:
@@ -39,6 +45,10 @@ class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
 		sys.stderr.write(time.asctime(time.localtime(time.time())) + ': ')
 		sys.stderr.write(msg.rstrip() + '\n')
 
+	def signal_handler(self, signum, frame):
+		self.log('Remote Control server stopped')
+		sys.exit(0)
+
 
 class RCHandler(SocketServer.BaseRequestHandler):
 
@@ -46,7 +56,19 @@ class RCHandler(SocketServer.BaseRequestHandler):
 		pass
 
 	def handle(self):
-		pass
+		while True:
+			recv = self.request.recv(1024)
+
+			if len(recv) < 1:
+				break
+
+			self.server.log(recv)
+
+			if recv == 'quit':
+				break
+
+			self.request.send(recv)
+
 
 if __name__ == '__main__':
 	rc = RemoteControl()
