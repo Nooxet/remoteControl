@@ -8,4 +8,7 @@ class MediaFinder:
 		pass
 
 	def get_media(self):
+		"""
+		Returns a list with all media files
+		"""
 		pass
