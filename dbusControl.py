@@ -1,4 +1,8 @@
 import dbus
 
-sess = dbus.SessionBus()
-proxy = sess.get_object(
+class DBusControl:
+
+	def __init__(self, path):
+		# connect to the session bus
+		session = dbus.SessionBus()
+
