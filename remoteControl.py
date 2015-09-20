@@ -15,17 +15,20 @@ import time
 import syslog
 import signal
 import SocketServer
+import json
+import logging
 
 from daemon import Daemon
 
 class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
-	
-	PORT = 1337
 
 	def __init__(self, port=1337):
 		Daemon.__init__(self, '/var/run/remoteControl.pid', stdout='/dev/stdout', stderr='/dev/stderr')#, stderr = '/var/log/remoteControl.errlog')
 		self.PORT = port
-		self.log('Remote Control server started at port %d' % self.PORT)
+
+		logging.basicConfig(format='%(levelname)s: %(asctime)s - %(message)s', 
+			datefmt='%d/%m/%Y %I:%M:%S', level=logging.DEBUG)
+		logging.info('Remote Control server started at port %d' % self.PORT)
 
 	def run(self):
 		# handle Ctrl + C, if running in no-daemon mode
@@ -36,17 +39,13 @@ class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
 		try:
 			SocketServer.ThreadingTCPServer.__init__(self, ('0.0.0.0', self.PORT), RCHandler)
 		except:
-			self.log('Unable to bind port %d' % self.PORT)
+			logging.error('Unable to bind port %d' % self.PORT)
 			exit(1)
 
 		self.serve_forever()
 
-	def log(self, msg):
-		sys.stderr.write(time.asctime(time.localtime(time.time())) + ': ')
-		sys.stderr.write(msg.rstrip() + '\n')
-
 	def signal_handler(self, signum, frame):
-		self.log('Remote Control server stopped')
+		logging.info('Remote Control server stopped')
 		sys.exit(0)
 
 
@@ -56,18 +55,25 @@ class RCHandler(SocketServer.BaseRequestHandler):
 		pass
 
 	def handle(self):
-		while True:
-			recv = self.request.recv(1024)
+		raw = self.request.recv(1024)
+		if not raw:
+			return
 
-			if len(recv) < 1:
-				break
+		recv = raw.strip()
 
-			self.server.log(recv)
+		# do some logging
+		logging.debug("RECV: (%s), %s" % (recv, self.client_address))
+		
+		try:
+			data = json.loads(recv)
+		except:
+			logging.error('JSON parse error: %s' % recv)
+			return
 
-			if recv == 'quit':
-				break
+		print data
 
-			self.request.send(recv)
+		if recv == 'quit':
+			return
 
 
 if __name__ == '__main__':
