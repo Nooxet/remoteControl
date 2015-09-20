@@ -1,0 +1,7 @@
+Using JSON format:
+
+{
+	'method': ['GET' | 'CMD'],
+	'media': ['movie', 'music'],
+	'command': ['play' | 'pause' | 'vol up' | 'vol down']
+}
