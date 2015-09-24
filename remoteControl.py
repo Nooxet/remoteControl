@@ -19,6 +19,7 @@ import json
 import logging
 
 from daemon import Daemon
+from mediaFinder import MediaFinder
 
 class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
 
@@ -59,21 +60,26 @@ class RCHandler(SocketServer.BaseRequestHandler):
 		if not raw:
 			return
 
+		# clean all whitespace
 		recv = raw.strip()
 
 		# do some logging
-		logging.debug("RECV: (%s), %s" % (recv, self.client_address))
+		logging.debug("(%s) sent: %s" % (self.client_address, recv))
 		
+		# try parsing data as JSON
 		try:
 			data = json.loads(recv)
+		except ValueError:
+			logging.error('JSON parsing error: %s' % recv)
+			return
 		except:
-			logging.error('JSON parse error: %s' % recv)
+			logging.error('Someting strange happened...')
 			return
 
-		print data
 
-		if recv == 'quit':
-			return
+
+	def parseJSON(self, data):
+		pass
 
 
 if __name__ == '__main__':
