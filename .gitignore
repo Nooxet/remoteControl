@@ -3,4 +3,5 @@ keyboard_simulator/keyboard_simulator
 core
 *.swp
 *.pyc
+*.so
 __pycache__/
