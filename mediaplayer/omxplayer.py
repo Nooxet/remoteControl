@@ -27,6 +27,7 @@ class OMXPlayer(MediaPlayer):
 		# set up env. variables in order to find DBus paths
 		try:
 			username = getpass.getuser()
+			print username
 		except:
 			logging.error('Could not find username in system')
 			exit(1)
@@ -45,12 +46,15 @@ class OMXPlayer(MediaPlayer):
 
 		# read paths and export to env. variables
 		with open(dbus_path, 'r') as f:
-			dbus_data = f.read()
+			dbus_data = f.read().strip()
+			print "dbus_data", dbus_data
 			os.environ['DBUS_SESSION_BUS_ADDRESS'] = dbus_data
 
 		with open(dbus_pid_path, 'r') as f:
-			dbus_pid_data = f.read()
+			dbus_pid_data = f.read().strip()
 			os.environ['DBUS_SESSION_BUS_PID'] = dbus_pid_data
+
+		print os.environ.get('DBUS_SESSION_BUS_PID')
 
 		omxObject = self.dbusSession.get_object('org.mpris.MediaPlayer2.omxplayer',
 			'/org/mpris/MediaPlayer2')
