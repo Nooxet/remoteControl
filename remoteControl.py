@@ -10,22 +10,25 @@ Noxet
 
 """
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import sys
 import time
 import syslog
 import signal
-import SocketServer
+#import SocketServer as sserver
+import socketserver as sserver
 import json
 import logging
 
-from daemon import Daemon
 from mediaFinder import MediaFinder
 
-class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
+class RemoteControl(sserver.ThreadingTCPServer):
 
 	def __init__(self, port=1337):
-		Daemon.__init__(self, '/var/run/remoteControl.pid', stdout='/dev/stdout', stderr='/dev/stderr')#, stderr = '/var/log/remoteControl.errlog')
 		self.PORT = port
+		self.mediafinder = MediaFinder('/home/noxet/Videos')
 
 		logging.basicConfig(format='%(levelname)s: %(asctime)s - %(message)s', 
 			datefmt='%d/%m/%Y %I:%M:%S', level=logging.DEBUG)
@@ -38,10 +41,10 @@ class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
 		signal.signal(signal.SIGTERM, self.signal_handler)
 
 		try:
-			SocketServer.ThreadingTCPServer.__init__(self, ('0.0.0.0', self.PORT), RCHandler)
+			sserver.ThreadingTCPServer.__init__(self, ('0.0.0.0', self.PORT), RCHandler)
 		except:
 			logging.error('Unable to bind port %d' % self.PORT)
-			exit(1)
+			sys.exit(1)
 
 		self.serve_forever()
 
@@ -50,7 +53,7 @@ class RemoteControl(SocketServer.ThreadingTCPServer, Daemon):
 		sys.exit(0)
 
 
-class RCHandler(SocketServer.BaseRequestHandler):
+class RCHandler(sserver.BaseRequestHandler):
 
 	def setup(self):
 		pass
@@ -60,8 +63,8 @@ class RCHandler(SocketServer.BaseRequestHandler):
 		if not raw:
 			return
 
-		# clean all whitespace
-		recv = raw.strip()
+		# clean all whitespace and decode as UTF8
+		recv = raw.strip().decode('utf-8')
 
 		# do some logging
 		logging.debug("(%s) sent: %s" % (self.client_address, recv))
@@ -69,17 +72,26 @@ class RCHandler(SocketServer.BaseRequestHandler):
 		# try parsing data as JSON
 		try:
 			data = json.loads(recv)
+			print(data)
 		except ValueError:
 			logging.error('JSON parsing error: %s' % recv)
 			return
 		except:
 			logging.error('Someting strange happened...')
 			return
+		
+		# parse data
+		if 'ctrl' in data:
+			ctrl = data['ctrl']
+			if ctrl == 'play':
+				pass
+			elif ctrl == 'pause':
+				pass
+			elif ctrl == 'stop':
+				pass
+		
+#		print self.server.mediafinder.get_movies()
 
-
-
-	def parseJSON(self, data):
-		pass
 
 
 if __name__ == '__main__':
@@ -95,9 +107,9 @@ if __name__ == '__main__':
 		elif sys.argv[1] == 'nod': # no-daemon mode
 			rc.run()
 		else:
-			print 'Unknown command'
+			print('Unknown command')
 			sys.exit(2) # command line error		
 		sys.exit(0)
 	else:
-		print 'Usage: %s start|stop|restart|nod' % sys.argv[0]
+		print('Usage: %s start|stop|restart|nod' % sys.argv[0])
 		sys.exit(2)

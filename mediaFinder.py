@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 
 class MediaFinder:
@@ -16,10 +19,11 @@ class MediaFinder:
 		"""
 		medialist = []
 		for root, dirs, files in os.walk(self.path):
-			for file in files:
-				name, ext = os.path.splitext(file)
+			for fil in files:
+				name, ext = os.path.splitext(fil)
+				# only add requested media
 				if ext in mediaext:
-					medialist.append(root + "\\" +  file)
+					medialist.append(root + "/" +  fil)
 
 		return medialist
 		
@@ -36,23 +40,11 @@ class MediaFinder:
 		return self.get_media(self.movieext)
 
 
-		
-					
-			
-		
-		
-		
-
 if __name__ == '__main__':
 	# create a media finder object, with path = 'mypath'
-	mf = MediaFinder('C:\\Users\\Andreas\\Desktop')
+	mf = MediaFinder('/home/noxet/Movies')
 
 	# prints the list with all media
 	# print mf.get_movies()
-	print "music:", mf.get_music()
-	print "filmer:", mf.get_movies()
-	
-	
-	
-
-	
+	print("music:", mf.get_music())
+	print("filmer:", mf.get_movies())
