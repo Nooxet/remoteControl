@@ -12,7 +12,7 @@ class MediaFinder:
 		self.movieext = [".mp4", ".mkv", ".avi"]
 		self.musicext = [".mp3", ".wma", ".flac"]
 
-
+	# TODO: support several paths
 	def get_media(self, mediaext):
 		"""
 		Returns a list with all media files
@@ -23,6 +23,7 @@ class MediaFinder:
 				name, ext = os.path.splitext(fil)
 				# only add requested media
 				if ext in mediaext:
+					# TODO: fix '/' to be OS independent
 					medialist.append(root + "/" +  fil)
 
 		return medialist
