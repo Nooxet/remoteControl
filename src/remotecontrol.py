@@ -22,7 +22,7 @@ import socketserver as sserver
 import json
 import logging
 
-from mediaFinder import MediaFinder
+from mediafinder import MediaFinder
 
 class RemoteControl(sserver.ThreadingTCPServer):
 
