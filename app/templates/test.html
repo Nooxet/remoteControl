@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="col-md-4">
+	<h3>Media:</h3>
+	<ul class="list-group">
+	{% for key, val in media.items() recursive %}
+		<li class="list-group-item">{{ key }}
+		{% if val is mapping %}
+			<ul>{{ loop(val.items()) }}</ul>
+		{% else %}
+			<ul>{% for v in val %}
+				<li>{{ v }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+	</div>
+{% endblock %}

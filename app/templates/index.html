@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="col-md-4">
+	<h3>Media:</h3>
+	{% for m in media %}
+		<ul class="list-group">
+			<li class="list-group-item">
+				<span class="badge">{{ media[m]|length }}</span>
+				<a href="#{{m}}" data-toggle="collapse">{{ m }}</a>
+			</li>
+
+			<div id="{{m}}" class="collapse">
+				{% for name in media[m] %}
+					<ul class="list-unstyled">
+						<li>{{ name }}</li>
+					</ul>
+				{% endfor %}
+			</div>
+
+		</ul>
+	{% endfor %}
+	</div>
+{% endblock %}
