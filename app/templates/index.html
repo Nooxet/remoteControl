@@ -10,11 +10,13 @@
 			</li>
 
 			<div id="{{m}}" class="collapse">
-				{% for name in media[m] %}
-					<ul class="list-unstyled">
-						<li>{{ name }}</li>
-					</ul>
-				{% endfor %}
+				<ul class="list-group">
+					{% for name in media[m] %}
+						<li class="list-group-item">
+							- <a href="#{{ name }}" data-toggle="collapse">{{ name }}</a>
+						</li>
+					{% endfor %}
+				</ul>
 			</div>
 
 		</ul>

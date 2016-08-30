@@ -14,11 +14,17 @@ def index():
 @server.route('/test')
 def test():
     data = {
-        'Movies': {
-            'The Best': ['Pulp Fiction', 'Fight Club', 'Terminator'],
-        },
         'Series': {
-            'My Favs': ['Dexter', 'House MD', 'Breaking Bad', 'Friends']
+            'MyFavs': {
+                'Dexter': ['Dexter - S01E01 - Pilot.mp4', 'Dexter - S01E02 - During The Darkest Night.mkv', '3'],
+                'BreakingBad': ['1', '2', '3'],
+                'House': ['1', '2', '3']
+            },
+            'MyFavs2': {
+                'Dexter': ['Dexter - S01E01 - Pilot.mp4', 'Dexter - S01E02 - During The Darkest Night.mkv', '3'],
+                'BreakingBad': ['1', '2', '3'],
+                'House': ['1', '2', '3']
+            }
         }
     }
     return render_template('test.html', media=data)
